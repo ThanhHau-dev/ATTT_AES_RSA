@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AES Encryption Demo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 50px;
+        background-color: #f4f4f4;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      input,
+      textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+
+      button {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #218838;
+      }
+
+      .result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AES Encryption Demo</h1>
+
+    <label for="data">Data to Encrypt:</label>
+    <textarea id="data" rows="4" placeholder="Enter your message..."></textarea>
+
+    <label for="key">Encryption Key (16 characters):</label>
+    <input
+      type="text"
+      id="key"
+      maxlength="16"
+      placeholder="Enter your secret key..."
+    />
+
+    <button onclick="sendData()">Encrypt Data</button>
+
+    <div class="result" id="result">
+      <strong>Encrypted Data:</strong>
+      <p id="encryptedData">N/A</p>
+    </div>
+
+    <script>
+      async function sendData() {
+        const data = document.getElementById("data").value;
+        const key = document.getElementById("key").value;
+
+        if (key.length !== 16 && key.length !== 24 && key.length !== 32) {
+          alert("Độ dài key phải là 16, 24, hoặc 32 ký tự");
+          return;
+        }
+
+        const payload = { data, key };
+
+        try {
+          const response = await fetch("http://localhost:8080", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+          });
+
+          if (!response.ok) {
+            throw new Error("không thể kết nối tới server");
+          }
+
+          const result = await response.json();
+          document.getElementById("encryptedData").textContent =
+            result.encrypted_data;
+        } catch (error) {
+          console.error("Error:", error);
+          alert("Đã xảy ra lỗi: " + error.message);
+        }
+      }
+    </script>
+  </body>
+</html>
